@@ -1,5 +1,6 @@
 const express = require('express')
 const morgan = require('morgan')
+const cors = require('cors')
 const app = express()
 const port = 4000
 
@@ -24,11 +25,13 @@ function prettyJSONString(inputString) {
 app.use(express.urlencoded())
 app.use(express.json())
 app.use(morgan('dev'))
+app.use(cors())
 
 /**
  * * Routes
  */
 app.get('/', async (req, res) => {
+	// res.send({a: 'asdada'})
     try {
         const gateway = new Gateway();
 
