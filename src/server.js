@@ -101,6 +101,35 @@ app.post("/create", async(req, res) => {
 	}
 })
 
+app.post('/update', async(req, res) => {
+	try {
+		const { curp } = req.body
+		const expstr = JSON.stringify(req.body)
+
+		const gateway = new Gateway()
+		
+		await gateway.connect(ccp, {
+			wallet,
+			identity: org1UserId,
+			discovery: { enabled: true, asLocalhost: true }
+		})
+		const network = await gateway.getNetwork(channelName)
+		const contract = network.getContract(chaincodeName)
+
+		console.log('\n--> Submit Transaction: UpdateAsset asset1, change the appraisedValue to 350');
+		await contract.submitTransaction('UpdateAsset', curp, expstr);
+
+		console.log('\n--> Evaluate Transaction: ReadAsset, function returns an asset with a given assetID');
+		let result = await contract.evaluateTransaction('ReadAsset', curp)
+		console.log(`*** Result: ${prettyJSONString(result.toString())}`);
+
+		res.send(prettyJSONString(result.toString()))
+	} catch (error) {
+		res.send(`Error: no se pudo actualizar el expediente`)
+		console.error("Error: ", error)
+	}
+})
+
 
 /**
  * * Server listener
